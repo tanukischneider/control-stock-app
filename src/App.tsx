@@ -2,30 +2,40 @@ import { useState } from "react"
 import Sidebar from "./components/Sidebar"
 import DashboardCards from "./components/DashboardCards"
 import ProductTable from "./components/ProductTable"
+import ProductForm from "./components/ProductForm"
+import type { Product } from "./types/product"
 
 function App() {
   
-  const [productos, setProductos] = useState([
-    {id: 1, nombre: "UTP Cat6", metros: 500},
-    {id: 2, nombre: "Coaxial RG6", metros: 300},
-    {id: 3, nombre: "Fibre Optica", metros: 1200}
+  const [productos, setProductos] = useState<Product[]>([
+    {
+      id: crypto.randomUUID(),
+      name: "UTP Cat6",
+      sku: "UTP-CAT6",
+      unit: "m",
+      stock: 500,
+      price: 1.2
+    }
   ])
-  const [productoEditando, setProductoEditando] = useState(null)
+
+  const [productoEditando, setProductoEditando] = useState<string | null>(null)
   const [nombreEditado, setNombreEditado] = useState("")
   const [metrosEditado, setMetrosEditado] = useState("")
   const [nombre, setNombre] = useState("")
   const [metros, setMetros] = useState("")
   const totalProductos = productos.length
-  const totalMetros = productos.reduce((acc, p) => acc + p.metros, 0)
-  const tiposUnicos = new Set(productos.map(p => p.nombre)).size
+  const totalMetros = productos.reduce((acc, p) => acc + p.stock, 0)
+  const tiposUnicos = new Set(productos.map(p => p.name)).size
 
-  const agregarProducto = (e) => {
+  const agregarProducto = (e: React.ChangeEvent<HTMLFormElement>) => {
     e.preventDefault()
 
-    const nuevoProducto = {
-      id: Date.now(),
-      nombre,
-      metros: Number(metros)
+    const nuevoProducto: Product = {
+      id: Date.now().toString(),
+      name: nombre,
+      sku: crypto.randomUUID(),
+      unit: "m",
+      stock: Number(metros)
     }
 
     setProductos(prev => [...prev, nuevoProducto])
@@ -34,15 +44,15 @@ function App() {
     setMetros("")
   }
 
-  const eliminarProducto = (id) => {
+  const eliminarProducto = (id: string) => {
     setProductos(prev => prev.filter(p => p.id !== id))
   }
 
-  const guardarEdicion = (id) => {
+  const guardarEdicion = (id: string) => {
     setProductos(prev =>
       prev.map(p =>
         p.id === id
-        ? {...p, nombre: nombreEditado, metros: Number(metrosEditado)}
+        ? {...p, name: nombreEditado, stock: Number(metrosEditado)}
         : p
       )
     )
@@ -69,27 +79,13 @@ function App() {
           
           <div className="bg-gray-100 p-6 rounded-lg shadow-sm max-w-md mt-10">
             <h2 className="text-lg font-semibold text-slate-800 mb-4">Agregar Producto</h2>
-            <form onSubmit={agregarProducto} className="flex flex-col gap-4">
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Nombre</label>
-                <input 
-                type="text" 
-                value={nombre} 
-                onChange={(e) => setNombre(e.target.value)} 
-                className="w-full border border-slate-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-slate-400" required/>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Metros</label>
-                <input 
-                type="number"
-                value={metros}
-                onChange={(e) => setMetros(e.target.value)}
-                className="w-full border border-slate-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-slate-400"
-                required
-                min={1} />
-              </div>
-              <button type="submit" className="bg-slate-800 text-white rounded-md p-2 hover:bg-slate-900 transition-colors">Agregar</button>
-            </form>
+            <ProductForm
+            name={nombre}
+            stock={metros}
+            agregarProducto={agregarProducto}
+            setNombre={setNombre}
+            setMetros={setMetros}
+            />
           </div>
           
           <ProductTable 
