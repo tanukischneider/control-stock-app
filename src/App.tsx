@@ -3,7 +3,10 @@ import Sidebar from "./components/Sidebar"
 import DashboardCards from "./components/DashboardCards"
 import ProductTable from "./components/ProductTable"
 import ProductForm from "./components/ProductForm"
+import ClientForm from "./components/ClientForm"
 import type { Product } from "./types/product"
+import type { Client } from "./types/client"
+
 
 function App() {
   
@@ -18,16 +21,48 @@ function App() {
     }
   ])
 
+  const [cliente, setCliente] = useState<Client[]>([
+    {
+      id: crypto.randomUUID(),
+      name: "Rodrigo Miller",
+      company: "Comlec",
+      phone: "123 456-789",
+      email: "comlec@gmail.com"
+    }
+  ])
+
+  const agregarCliente = (e: React.SubmitEvent<HTMLFormElement>) => {
+    e.preventDefault()
+
+    const nuevoCliente: Client = {
+      id: crypto.randomUUID(),
+      name: clientName,
+      company: clientCompany,
+      phone: clientPhone,
+      email: clientEmail
+    }
+
+    setCliente(prev => [...prev, nuevoCliente])
+    setClientName("")
+    setClientCompany("")
+    setClientPhone("")
+    setClientEmail("")
+  }
+
   const [productoEditando, setProductoEditando] = useState<string | null>(null)
   const [nombreEditado, setNombreEditado] = useState("")
   const [metrosEditado, setMetrosEditado] = useState("")
   const [nombre, setNombre] = useState("")
+  const [clientName, setClientName] = useState("")
+  const [clientCompany, setClientCompany] = useState("")
+  const [clientPhone, setClientPhone] = useState("")
+  const [clientEmail, setClientEmail] = useState("")
   const [metros, setMetros] = useState("")
   const totalProductos = productos.length
   const totalMetros = productos.reduce((acc, p) => acc + p.stock, 0)
   const tiposUnicos = new Set(productos.map(p => p.name)).size
 
-  const agregarProducto = (e: React.ChangeEvent<HTMLFormElement>) => {
+  const agregarProducto = (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault()
 
     const nuevoProducto: Product = {
@@ -99,6 +134,20 @@ function App() {
             setProductoEditando={setProductoEditando}
             eliminarProducto={eliminarProducto}
           />
+          <div className="bg-gray-100 p-6 rounded-lg shadow-sm max-w-md mt-10">
+            <h2 className="text-lg font-semibold text-slate-800 mb-4">Agregar Cliente</h2>
+          <ClientForm
+            name={clientName}
+            company={clientCompany}
+            phone={clientPhone}
+            email={clientEmail}
+            agregarCliente={agregarCliente}
+            setClientName={setClientName}
+            setClientCompany={setClientCompany}
+            setClientPhone={setClientPhone}
+            setClientEmail={setClientEmail}
+          />
+          </div>
         </main>
     </div>
   )

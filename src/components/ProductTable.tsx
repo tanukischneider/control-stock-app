@@ -27,7 +27,7 @@ function ProductTable ({
 }: ProductTableProps) {
     return (
         <div className="mt-10 ">
-            <h2 className="text-lg font-semibold text-slate-800 mb-4">Stock de Productos</h2>
+            <h2 className="text-lg font-semibold text-slate-100 mb-4">Stock de Productos</h2>
             <table className="w-full bg-gray-100 rounded-lg shadow-sm border-collapse">
               
               <thead>
